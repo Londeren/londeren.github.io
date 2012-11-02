@@ -1,13 +1,3 @@
 .idea/*
-www/*
-!www/bitrix/
-www/bitrix/*
-!www/bitrix/templates
-!www/bitrix/php_interface
-!www/bitrix/components
-www/bitrix/components/*
-!www/bitrix/components/ergeslab
-!www/urlrewrite.php
-!www/glossary_import
-!www/books
-biology/*
+config.rb
+sass/*
