@@ -6,6 +6,7 @@ $(function(){
 
   $_lastvk.trigger("lastvk.ready");
 
+  
 
 });
 

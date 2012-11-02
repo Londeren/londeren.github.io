@@ -46,14 +46,12 @@ $(function()
     {
       var lastfmToken = getURLParameter(t);
       if(lastfmToken)
-      { console.log(lastfmToken);
+      {
         lastfm.auth.getSession({token: lastfmToken}, {success: function(data){
-          console.log(data);
-          alert("Привет, "+data.session.name+"!\n\rРад тебя видеть, твою ключ сессии "+data.session.key); // Для видимости
-          var sk = data.session.key; // В раннее созданную переменную записываем ключ сессии.
+          $_lastfmAuthButton.html("Last.fm: hi, " + data.session.name).addClass("success disabled").off();
         }, error: function(code, message){
           if (code == 4)
-            alert("Токен умер. Щелкни снова авторизацию");
+            $_lastfmAuthButton.html("Last.fm try again").addClass("alert");
         }});
       }
     }

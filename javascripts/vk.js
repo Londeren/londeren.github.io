@@ -27,18 +27,22 @@ $(function()
   $_vkAuthButton.on('click', function(e)
   {
     e.preventDefault();
-    VK.Auth.login(authInfo, 8);
+    VK.Auth.login(authInfo, VK.access.AUDIO);
   });
 
   function authInfo(response)
   {
     if(response.session)
     {
-      $_vkAuthButton.html("VK.com authorized").addClass("success disabled").off();
+      VK.Api.call('users.get', {uids: response.session.mid}, function(res) {
+        var first_name = res.response.pop()['first_name'];
+        var howdy = "VK.com: hi, " + first_name;
+        $_vkAuthButton.html(howdy).removeClass("alert").addClass("success disabled").off();
+      });
     }
     else
     {
-      $_vkAuthButton.html("VK.com try again").addClass("alert");
+      $_vkAuthButton.html("VK.com try again").removeClass("success disabled").addClass("alert");
     }
   }
 });
