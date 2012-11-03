@@ -44,9 +44,15 @@ $(function()
   $_lastvk.on("lastvk.lastfm.authorize", function()
   {
     var t = getURLParameter('lastfm');
-    if(t)
+    var storageToken = $.Storage.get("lastfmToken");
+    if(t || storageToken)
     {
       var lastfmToken = getURLParameter(t);
+
+      if(!lastfmToken)
+        lastfmToken = storageToken;
+
+
       if(lastfmToken)
       {
         lastfm.auth.getSession({token:lastfmToken}, {success:function(data)
@@ -54,6 +60,8 @@ $(function()
           userId = data.session.name;
           $_lastfmAuthButton.html("Last.fm: hi, " + userId).addClass("success disabled").off();
           $_lastvk.trigger("lastvk.authorized", ['LASTFM']);
+
+          $.Storage.set("lastfmToken", lastfmToken);
         },
           error:function(code, message)
           {
@@ -71,7 +79,22 @@ $(function()
   {
     lastfm.user.getLovedTracks({user: userId}, {success:function(data)
     {
-      console.log(data);
+      if(data.lovedtracks["@attr"].total > 0)
+      {
+        var trackList = [];
+        for(var t in data.lovedtracks.track)
+        {
+          var track = data.lovedtracks.track[t];
+
+          trackList.push({
+            "artist": track.artist.name,
+            "title": track.name
+          });
+        }
+        var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList}});
+        tracklistView.render($("#tracklist"), 'html');
+
+      }
     },
       error:function(code, message)
       {
