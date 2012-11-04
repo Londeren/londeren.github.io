@@ -41,3 +41,4 @@ function getURLParameter(name) {
   );
   return (param === "null" ? null : param);
 }
+

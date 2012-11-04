@@ -9,9 +9,7 @@
             view:null,
             data:{}
           },
-          viewHtml = '',
-          viewGetter,
-          self;
+          viewHtml = '';
 
   function Plugin(element, options)
   {
@@ -20,10 +18,9 @@
 
     this._defaults = defaults;
     this._name = pluginName;
+    this.viewGetter = null;
 
     this.init();
-
-    self = this;
   }
 
   Plugin.prototype.init = function()
@@ -31,7 +28,8 @@
     if(this.options.view && this.options.view.length)
     {
       var url = this.options.viewsPath + this.options.view + ".html";
-      viewGetter = $.ajax({
+
+      this.viewGetter = $.ajax({
         url:url,
         dataType:"html",
         type:"GET"
@@ -48,7 +46,8 @@
 
   Plugin.prototype.render = function(elem, where)
   {
-    viewGetter.done(function(){
+    var self = this;
+    this.viewGetter.done(function(){
       if(viewHtml.length === 0)
         return;
 

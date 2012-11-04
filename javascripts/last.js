@@ -94,6 +94,14 @@ $(function()
         var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList}});
         tracklistView.render($("#tracklist"), 'html');
 
+
+        var pagingView = $.views({view: 'paging', data: {paging: $.paging({
+          page:data.lovedtracks["@attr"].page,
+          perPage:data.lovedtracks["@attr"].perPage,
+          total:data.lovedtracks["@attr"].total
+        }).getPagingParams()}});
+        pagingView.render($("#paging"), 'html');
+
       }
     },
       error:function(code, message)
