@@ -129,6 +129,7 @@ $(function()
 
   /**
    * добавить данные треки в VK
+   * TODO добавлять треки в отдельный альбом
    * @param tracksToImport
    */
   function importTracks(tracksToImport)
@@ -162,7 +163,6 @@ $(function()
         }
 
       });
-      return;
     }
   }
 });
