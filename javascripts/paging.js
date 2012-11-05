@@ -14,6 +14,7 @@
   {
     this.element = element;
     this.options = $.extend({}, defaults, options);
+    this.options.page = parseInt(this.options.page);
 
     this._defaults = defaults;
     this._name = pluginName;

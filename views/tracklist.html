@@ -3,8 +3,8 @@
 <table>
     {{#tracks}}
         <tr>
-            <td>{{artist}} &mdash; {{title}}</td>
-            <td><input type="checkbox" checked></td>
+            <td><label for="{{label}}">{{artist}} &mdash; {{title}}</label></td>
+            <td><label for="{{label}}"><input type="checkbox" checked="checked" data-artist="{{artist}}" data-title="{{title}}" class="x-tracklist__to-vk__track" id="{{label}}"></label></td>
         </tr>
     {{/tracks}}
 </table>

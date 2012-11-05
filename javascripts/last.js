@@ -92,7 +92,8 @@ $(function()
 
           trackList.push({
             "artist": track.artist.name,
-            "title": track.name
+            "title": track.name,
+            "label": md5(track.artist.name + track.name)
           });
         }
         var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList}});
@@ -127,9 +128,6 @@ $(function()
     var page = $(this).attr('href').substr(1); // #12 to 12
     getLovedList(page);
   });
-
-
-
 
 
 });

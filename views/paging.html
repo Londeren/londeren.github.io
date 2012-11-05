@@ -5,7 +5,7 @@
       {{/hasPrev}}
       {{#pages}}
         <li class="{{#isCurrent}}current{{/isCurrent}}{{#isUnavailable}} unavailable{{/isUnavailable}}">
-            <a href="#{{page}}" class="x-page-link">
+            <a href="#{{page}}"{{^isUnavailable}} class="x-page-link"{{/isUnavailable}}>
                 {{#isUnavailable}}&hellip;{{/isUnavailable}}
                 {{^isUnavailable}}{{page}}{{/isUnavailable}}
             </a>
