@@ -8,8 +8,7 @@
             viewsPath:"/views/",
             view:null,
             data:{}
-          },
-          viewHtml = '';
+          };
 
   function Plugin(element, options)
   {
@@ -25,9 +24,11 @@
 
   Plugin.prototype.init = function()
   {
-    if(this.options.view && this.options.view.length)
+    if(this.options.view && this.options.view.length && typeof Plugin.viewsHtml[this.options.view] === "undefined" || Plugin.viewsHtml[this.options.view].length === 0)
     {
-      var url = this.options.viewsPath + this.options.view + ".html";
+      var self = this,
+          url = this.options.viewsPath + this.options.view + ".html";
+      Plugin.viewsHtml[this.options.view] = '';
 
       this.viewGetter = $.ajax({
         url:url,
@@ -35,7 +36,7 @@
         type:"GET"
       }).done(function(data)
               {
-                viewHtml = data;
+                Plugin.viewsHtml[self.options.view] = data;
               })
         .fail(function(e)
         {
@@ -47,18 +48,27 @@
   Plugin.prototype.render = function(elem, where)
   {
     var self = this;
-    this.viewGetter.done(function(){
-      if(viewHtml.length === 0)
-        return;
+    if(Plugin.viewsHtml[this.options.view].length === 0)
+    {
+      this.viewGetter.done(function(){
+        if(Plugin.viewsHtml[self.options.view].length === 0)
+          return;
 
-      elem[where](Mustache.to_html(viewHtml, self.options.data));
-    });
+        elem[where](Mustache.to_html(Plugin.viewsHtml[self.options.view], self.options.data));
+      });
+    }
+    else
+    {
+      elem[where](Mustache.to_html(Plugin.viewsHtml[this.options.view], self.options.data));
+    }
 
   };
 
 
   $.views = function(options)
   {
+    if(typeof Plugin.viewsHtml === "undefined")
+      Plugin.viewsHtml = {};
     return new Plugin(this, options);
   };
 
