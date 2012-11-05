@@ -9,13 +9,13 @@ $(function()
   'use strict';
 
   var $_lastvk = $("#lastvk"),
-          $_lastfmAuthButton = $("#lastfm-auth-button"),
-          lastfmSettings = {
-            apiKey:'c2670cfb2e8ab9bcb83791ea0edcb733',
-            apiSecret:'5f47ff5ad04e52e19693bb8195306640'
-          },
-          lastfm,
-          userId = '';
+      $_lastfmAuthButton = $("#lastfm-auth-button"),
+      lastfmSettings = {
+        apiKey:'c2670cfb2e8ab9bcb83791ea0edcb733',
+        apiSecret:'5f47ff5ad04e52e19693bb8195306640'
+      },
+      lastfm,
+      userId = '';
 
   $_lastvk.on("lastvk.ready", function()
   {
@@ -73,11 +73,15 @@ $(function()
   });
 
   /**
-   * авторизовались в обеих соцсетях
+   * получить список любимых треков на данной странице
+   * @param page
    */
-  $_lastvk.on('lastvk.initialized', function()
+  var getLovedList = function(page)
   {
-    lastfm.user.getLovedTracks({user: userId}, {success:function(data)
+    page = page || 1;
+    page = parseInt(page);
+
+    lastfm.user.getLovedTracks({user: userId, page: page}, {success:function(data)
     {
       if(data.lovedtracks["@attr"].total > 0)
       {
@@ -100,6 +104,7 @@ $(function()
           perPage:data.lovedtracks["@attr"].perPage,
           total:data.lovedtracks["@attr"].total
         }).getPagingParams()}});
+
         pagingView.render($("#paging"), 'html');
 
       }
@@ -108,7 +113,23 @@ $(function()
       {
 
       }});
+  };
+
+  /**
+   * авторизовались в обеих соцсетях
+   */
+  $_lastvk.on('lastvk.initialized', function()
+  {
+    getLovedList();
   });
+
+  $_lastvk.on("click", ".x-page-link", function(){
+    var page = $(this).attr('href').substr(1); // #12 to 12
+    getLovedList(page);
+  });
+
+
+
 
 
 });
