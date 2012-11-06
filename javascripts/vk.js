@@ -167,13 +167,18 @@ $(function()
               continue;
 
             var trk = res.response[tr];
-            //console.log(track, trk.artist);
+
             if(isTrackInTrackList(track, [trk])) // запись что надо
             {
-              VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
-              {
-                moveTrackToAlbum(res.response, albumId);
-              });
+              (function(trk){
+                setTimeout(function(){
+                  VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
+                  {
+                    //moveTrackToAlbum(res.response, albumId);
+
+                  });
+                }, 1000);
+              })(trk);
 
               break;
             }
