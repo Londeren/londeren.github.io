@@ -40,7 +40,7 @@
               })
         .fail(function(e)
         {
-          console.log(e.status + ": " + e.statusText);
+          //console.log(e.status + ": " + e.statusText);
         });
     }
   };
