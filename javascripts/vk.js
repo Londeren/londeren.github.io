@@ -9,9 +9,12 @@ $(function()
   'use strict';
 
   var $_lastvk = $("#lastvk"),
-          VK = window.VK,
-          $_vkAuthButton = $("#vk-auth-button"),
-          userId = 0;
+      VK = window.VK,
+      $_vkAuthButton = $("#vk-auth-button"),
+      userId = 0;
+
+  var ALBUM_NAME_LOVED = 'Loved tracks',
+      ALBUM_NAME_POPULAR = 'Most popular tracks';
 
   $_lastvk.on("lastvk.ready", function()
   {
@@ -20,7 +23,6 @@ $(function()
     });
 
     VK.Auth.getLoginStatus(authInfo);
-
 
 
   });
@@ -34,15 +36,17 @@ $(function()
   /**
    * авторизовались в обеих соцсетях
    */
-  $_lastvk.on('lastvk.initialized', function(){
+  $_lastvk.on('lastvk.initialized', function()
+  {
 
   });
 
 
   /**
-   * импорт выбранных треков в vk
+   * импорт выбранных Loved треков в vk
    */
-  $_lastvk.on("click", ".x-tracklist__to-vk", function(e){
+  $_lastvk.on("click", ".x-tracklist__to-vk", function(e)
+  {
     e.preventDefault();
 
     var $_selectedTracks = $_lastvk.find(".x-tracklist__to-vk__track:checked"),
@@ -52,7 +56,8 @@ $(function()
     {
       var vkTracks = [];
 
-      VK.Api.call('audio.get', {uid: userId}, function(res) {
+      VK.Api.call('audio.get', {uid:userId}, function(res)
+      {
         if(res.response.length === 0)
           return;
 
@@ -60,16 +65,17 @@ $(function()
         {
           var trk = res.response[t];
           vkTracks.push({
-            "artist": trk.artist,
-            "title": trk.title
+            "artist":trk.artist,
+            "title":trk.title
           });
         }
 
-        $_selectedTracks.each(function(){
+        $_selectedTracks.each(function()
+        {
           var track = {
-                "artist": $(this).data('artist'),
-                "title": $(this).data('title')
-              };
+            "artist":$(this).data('artist'),
+            "title":$(this).data('title')
+          };
 
           if(isTrackInTrackList(track, vkTracks))
             return;
@@ -78,7 +84,7 @@ $(function()
         });
 
         if(tracksToImport.length)
-          importTracks(tracksToImport);
+          getAlbumIdByName(ALBUM_NAME_LOVED, importTracks, tracksToImport);
       });
 
 
@@ -94,7 +100,8 @@ $(function()
     if(response.session)
     {
       userId = response.session.mid;
-      VK.Api.call('users.get', {uids: userId}, function(res) {
+      VK.Api.call('users.get', {uids:userId}, function(res)
+      {
         var first_name = res.response.pop()['first_name'];
         var howdy = "VK.com: hi, " + first_name;
         $_vkAuthButton.html(howdy).removeClass("alert").addClass("success disabled").off();
@@ -129,23 +136,27 @@ $(function()
 
   /**
    * добавить данные треки в VK
-   * TODO добавлять треки в отдельный альбом
    * TODO показывать прогрессбар
    * @param tracksToImport
+   * @param albumId
    */
-  function importTracks(tracksToImport)
+  function importTracks(tracksToImport, albumId)
   {
+
     if(tracksToImport.length === 0)
       return;
 
+    albumId = parseInt(albumId) || 0;
+
     for(var t in tracksToImport)
     {
-      if (!tracksToImport.hasOwnProperty(t))
+      if(!tracksToImport.hasOwnProperty(t))
         continue;
 
       var track = tracksToImport[t];
 
-      VK.Api.call('audio.search', {q: track.artist + " - " + track.title, count: 20}, function(res) {
+      VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res)
+      {
         if(res.response.length === 0)
           return;
 
@@ -158,8 +169,9 @@ $(function()
 
           if(isTrackInTrackList(track, [trk])) // запись что надо
           {
-            VK.Api.call('audio.add', {aid: trk.aid, oid: trk.owner_id}, function(res) {
-              console.log(res);
+            VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
+            {
+              moveTrackToAlbum(res.response, albumId);
             });
 
             break;
@@ -167,6 +179,61 @@ $(function()
         }
 
       });
+
     }
+
   }
+
+  /**
+   * ID альбома по его названию. если альбом отсутствует, то он создается
+   * @param albumName
+   * @param callback
+   * @param callbackParam
+   */
+  function getAlbumIdByName(albumName, callback, callbackParam)
+  {
+    VK.Api.call('audio.getAlbums', {}, function(res)
+    {
+      if(res.response.length !== 0)
+      {
+        for(var al in res.response)
+        {
+          if(!res.response.hasOwnProperty(al) || al == 0) // первый элемент - количество альбомов
+            continue;
+
+          var album = res.response[al];
+          if(album.title == albumName)
+          {
+            callback(callbackParam, album.album_id);
+            return;
+          }
+        }
+      }
+
+      /**
+       * добавить альбом
+       */
+      VK.Api.call('audio.addAlbum', {title: albumName}, function(res)
+      {
+        if(res.response.album_id > 0)
+          callback(callbackParam, res.response.album_id);
+
+      });
+
+    });
+  }
+
+  /**
+   * переместить трек в альбом
+   * @param albumId
+   * @param trackId
+   */
+  function moveTrackToAlbum(trackId, albumId)
+  {
+    VK.Api.call('audio.moveToAlbum', {aids: trackId, album_id: albumId}, function(res)
+    {
+      return res.response;
+    });
+  }
+
 });

@@ -1,11 +1,19 @@
-<div class="four columns offset-by-eight"><a href="#" class="small button x-tracklist__to-vk">Import selected to VK.com</a></div>
-<br><br><br>
-<table>
-    {{#tracks}}
-        <tr>
-            <td><label for="{{label}}">{{artist}} &mdash; {{title}}</label></td>
-            <td><label for="{{label}}"><input type="checkbox" checked="checked" data-artist="{{artist}}" data-title="{{title}}" class="x-tracklist__to-vk__track" id="{{label}}"></label></td>
-        </tr>
-    {{/tracks}}
-</table>
-<div class="four columns offset-by-eight"><a href="#" class="small button x-tracklist__to-vk">Import selected to VK.com</a></div>
+{{#hasTracks}}
+    <div class="four columns offset-by-eight"><a href="#" class="small button x-tracklist__to-vk">Import selected to VK.com</a></div>
+    <br><br><br>
+    <table>
+        <thead>
+            <tr>
+                <th>Artist &mdash; Title</th>
+                <th><input type="checkbox" checked="checked" id="x-tracklist__to-vk__checkall"></th>
+            </tr>
+        </thead>
+        {{#tracks}}
+            <tr>
+                <td><label for="{{label}}">{{artist}} &mdash; {{title}}</label></td>
+                <td><label for="{{label}}"><input type="checkbox" checked="checked" data-artist="{{artist}}" data-title="{{title}}" class="x-tracklist__to-vk__track" id="{{label}}"></label></td>
+            </tr>
+        {{/tracks}}
+    </table>
+    <div class="four columns offset-by-eight"><a href="#" class="small button x-tracklist__to-vk">Import selected to VK.com</a></div>
+{{/hasTracks}}

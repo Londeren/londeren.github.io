@@ -96,7 +96,7 @@ $(function()
             "label": md5(track.artist.name + track.name)
           });
         }
-        var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList}});
+        var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList, hasTracks: !!trackList.length}});
         tracklistView.render($("#tracklist"), 'html');
 
 
@@ -127,6 +127,15 @@ $(function()
   $_lastvk.on("click", ".x-page-link", function(){
     var page = $(this).attr('href').substr(1); // #12 to 12
     getLovedList(page);
+  });
+
+  /**
+   * чекбоксы в списке для импорта
+   */
+  $_lastvk.on("click", "#x-tracklist__to-vk__checkall", function(){
+    var checked = $(this).prop('checked');
+
+    $_lastvk.find(".x-tracklist__to-vk__track").prop('checked', checked);
   });
 
 
