@@ -151,7 +151,7 @@ $(function()
 
         for(var tr in res.response)
         {
-          if(tr == 0 || !res.response.hasOwnProperty(tr)) // первый элемент - количество записей
+          if(!res.response.hasOwnProperty(tr) || tr == 0) // первый элемент - количество записей
             continue;
 
           var trk = res.response[tr];
