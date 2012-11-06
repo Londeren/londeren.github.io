@@ -155,30 +155,32 @@ $(function()
 
       var track = tracksToImport[t];
 
-      VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res)
-      {
-        if(res.response.length === 0)
-          return;
-
-        for(var tr in res.response)
+      (function(track){
+        VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res)
         {
-          if(!res.response.hasOwnProperty(tr) || tr == 0) // первый элемент - количество записей
-            continue;
+          if(res.response.length === 0)
+            return;
 
-          var trk = res.response[tr];
-
-          if(isTrackInTrackList(track, [trk])) // запись что надо
+          for(var tr in res.response)
           {
-            VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
+            if(!res.response.hasOwnProperty(tr) || tr == 0) // первый элемент - количество записей
+              continue;
+
+            var trk = res.response[tr];
+            //console.log(track, trk.artist);
+            if(isTrackInTrackList(track, [trk])) // запись что надо
             {
-              moveTrackToAlbum(res.response, albumId);
-            });
+              VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
+              {
+                moveTrackToAlbum(res.response, albumId);
+              });
 
-            break;
+              break;
+            }
           }
-        }
 
-      });
+        });
+      })(track);
 
     }
 
