@@ -130,6 +130,7 @@ $(function()
   /**
    * добавить данные треки в VK
    * TODO добавлять треки в отдельный альбом
+   * TODO показывать прогрессбар
    * @param tracksToImport
    */
   function importTracks(tracksToImport)
@@ -139,6 +140,9 @@ $(function()
 
     for(var t in tracksToImport)
     {
+      if (!tracksToImport.hasOwnProperty(t))
+        continue;
+
       var track = tracksToImport[t];
 
       VK.Api.call('audio.search', {q: track.artist + " - " + track.title, count: 20}, function(res) {
@@ -147,7 +151,7 @@ $(function()
 
         for(var tr in res.response)
         {
-          if(tr == 0) // первый элемент - количество записей
+          if(tr == 0 || !res.response.hasOwnProperty(tr)) // первый элемент - количество записей
             continue;
 
           var trk = res.response[tr];
