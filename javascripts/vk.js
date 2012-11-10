@@ -58,7 +58,7 @@ $(function()
 
       VK.Api.call('audio.get', {uid:userId}, function(res)
       {
-        if(res.response.length === 0)
+        if(isVkError(res) || res.response.length === 0)
           return;
 
         for(var t in res.response)
@@ -102,10 +102,14 @@ $(function()
       userId = response.session.mid;
       VK.Api.call('users.get', {uids:userId}, function(res)
       {
-        var first_name = res.response.pop()['first_name'];
-        var howdy = "VK.com: hi, " + first_name;
-        $_vkAuthButton.html(howdy).removeClass("alert").addClass("success disabled").off();
-        $_lastvk.trigger("lastvk.authorized", ['VK']);
+        if(!isVkError(res))
+        {
+          var first_name = res.response.pop()['first_name'];
+          var howdy = "VK.com: hi, " + first_name;
+          $_vkAuthButton.html(howdy).removeClass("alert").addClass("success disabled").off();
+          $_lastvk.trigger("lastvk.authorized", ['VK']);
+        }
+
       });
     }
     else
@@ -153,12 +157,13 @@ $(function()
       if(!tracksToImport.hasOwnProperty(t))
         continue;
 
-      var track = tracksToImport[t];
+      var track = tracksToImport[t],
+          timeout = 0;
 
       (function(track){
         VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res)
         {
-          if(res.response.length === 0)
+          if(isVkError(res) || res.response.length === 0)
             return;
 
           for(var tr in res.response)
@@ -170,15 +175,21 @@ $(function()
 
             if(isTrackInTrackList(track, [trk])) // запись что надо
             {
-              (function(trk){
+              timeout++;
+              (function(trk, timeout){
+                timeout = (Math.floor(Math.random() * 2) + 1) * timeout * 1000;
+
                 setTimeout(function(){
                   VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
                   {
-                    //moveTrackToAlbum(res.response, albumId);
-
+                    if(!isVkError(res))
+                    {
+                      showNotice("Added: " + track.artist + " - " + track.title);
+                      moveTrackToAlbum(res.response, albumId, track);
+                    }
                   });
-                }, 1000);
-              })(trk);
+                }, timeout);
+              })(trk, timeout);
 
               break;
             }
@@ -201,7 +212,7 @@ $(function()
   {
     VK.Api.call('audio.getAlbums', {}, function(res)
     {
-      if(res.response.length !== 0)
+      if(!isVkError(res) && res.response.length !== 0)
       {
         for(var al in res.response)
         {
@@ -222,8 +233,9 @@ $(function()
        */
       VK.Api.call('audio.addAlbum', {title: albumName}, function(res)
       {
-        if(res.response.album_id > 0)
-          callback(callbackParam, res.response.album_id);
+        if(!isVkError(res))
+          if(res.response.album_id > 0)
+            callback(callbackParam, res.response.album_id);
 
       });
 
@@ -234,13 +246,32 @@ $(function()
    * переместить трек в альбом
    * @param albumId
    * @param trackId
+   * @param track
    */
-  function moveTrackToAlbum(trackId, albumId)
+  function moveTrackToAlbum(trackId, albumId, track)
   {
+    track = track || {artist: '', title: ''};
+
     VK.Api.call('audio.moveToAlbum', {aids: trackId, album_id: albumId}, function(res)
     {
-      return res.response;
+      if(!isVkError(res))
+      {
+        showNotice("Moved to album: " + track.artist + " - " + track.title);
+        return res.response;
+      }
     });
   }
 
 });
+
+function isVkError(res)
+{
+  if(typeof res.error !== 'undefined' && res.error.error_msg)
+  {
+    showNotice('VK Error. Code: ' + res.error.error_code + '. Error message: ' + res.error.error_msg);
+    console.error(res);
+    return true;
+  }
+  return false;
+}
+
