@@ -26,7 +26,7 @@ $(function(){
    * авторизовались в обеих соцсетях
    */
   $_lastvk.on('lastvk.initialized', function(){
-
+    showNotice("Select tracks for import");
   });
 
 
@@ -40,5 +40,19 @@ function getURLParameter(name) {
           (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
   );
   return (param === "null" ? null : param);
+}
+
+function showNotice(text, type)
+{
+  type = type || 'information';
+
+  noty({
+    text: text,
+    type: type,
+    dismissQueue: true,
+    layout: "topRight",
+    theme: 'defaultTheme',
+    timeout: 3000
+  });
 }
 
