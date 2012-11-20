@@ -4,8 +4,7 @@
  * Date: 01.11.12
  * Time: 21:21
  */
-$(function()
-{
+$(function() {
   'use strict';
 
   var $_lastvk = $("#lastvk"),
@@ -16,8 +15,7 @@ $(function()
   var ALBUM_NAME_LOVED = 'Loved tracks',
       ALBUM_NAME_POPULAR = 'Most popular tracks';
 
-  $_lastvk.on("lastvk.ready", function()
-  {
+  $_lastvk.on("lastvk.ready", function() {
     VK.init({
       apiId:3205923
     });
@@ -27,8 +25,7 @@ $(function()
 
   });
 
-  $_vkAuthButton.on('click', function(e)
-  {
+  $_vkAuthButton.on('click', function(e) {
     e.preventDefault();
     VK.Auth.login(authInfo, VK.access.AUDIO);
   });
@@ -36,8 +33,7 @@ $(function()
   /**
    * авторизовались в обеих соцсетях
    */
-  $_lastvk.on('lastvk.initialized', function()
-  {
+  $_lastvk.on('lastvk.initialized', function() {
 
   });
 
@@ -45,8 +41,7 @@ $(function()
   /**
    * импорт выбранных Loved треков в vk
    */
-  $_lastvk.on("click", ".x-tracklist__to-vk", function(e)
-  {
+  $_lastvk.on("click", ".x-tracklist__to-vk", function(e) {
     e.preventDefault();
 
     var $_selectedTracks = $_lastvk.find(".x-tracklist__to-vk__track:checked"),
@@ -56,8 +51,7 @@ $(function()
     {
       var vkTracks = [];
 
-      VK.Api.call('audio.get', {uid:userId}, function(res)
-      {
+      VK.Api.call('audio.get', {uid:userId}, function(res) {
         if(isVkError(res) || res.response.length === 0)
           return;
 
@@ -70,8 +64,7 @@ $(function()
           });
         }
 
-        $_selectedTracks.each(function()
-        {
+        $_selectedTracks.each(function() {
           var track = {
             "artist":$(this).data('artist'),
             "title":$(this).data('title')
@@ -95,13 +88,11 @@ $(function()
    * авторизация
    * @param response
    */
-  function authInfo(response)
-  {
+  function authInfo(response) {
     if(response.session)
     {
       userId = response.session.mid;
-      VK.Api.call('users.get', {uids:userId}, function(res)
-      {
+      VK.Api.call('users.get', {uids:userId}, function(res) {
         if(!isVkError(res))
         {
           var first_name = res.response.pop()['first_name'];
@@ -123,8 +114,7 @@ $(function()
    * @param track
    * @param trackList
    */
-  function isTrackInTrackList(track, trackList)
-  {
+  function isTrackInTrackList(track, trackList) {
     if(trackList.length === 0)
       return false;
 
@@ -144,8 +134,7 @@ $(function()
    * @param tracksToImport
    * @param albumId
    */
-  function importTracks(tracksToImport, albumId)
-  {
+  function importTracks(tracksToImport, albumId) {
 
     if(tracksToImport.length === 0)
       return;
@@ -160,9 +149,8 @@ $(function()
       var track = tracksToImport[t],
           timeout = 0;
 
-      (function(track){
-        VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res)
-        {
+      (function(track) {
+        VK.Api.call('audio.search', {q:track.artist + " - " + track.title, count:20}, function(res) {
           if(isVkError(res) || res.response.length === 0)
             return;
 
@@ -176,12 +164,11 @@ $(function()
             if(isTrackInTrackList(track, [trk])) // запись что надо
             {
               timeout++;
-              (function(trk, timeout){
+              (function(trk, timeout) {
                 timeout = (Math.floor(Math.random() * 2) + 1) * timeout * 1000;
 
-                setTimeout(function(){
-                  VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res)
-                  {
+                setTimeout(function() {
+                  VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res) {
                     if(!isVkError(res))
                     {
                       showNotice("Added: " + track.artist + " - " + track.title);
@@ -208,10 +195,8 @@ $(function()
    * @param callback
    * @param callbackParam
    */
-  function getAlbumIdByName(albumName, callback, callbackParam)
-  {
-    VK.Api.call('audio.getAlbums', {}, function(res)
-    {
+  function getAlbumIdByName(albumName, callback, callbackParam) {
+    VK.Api.call('audio.getAlbums', {}, function(res) {
       if(!isVkError(res) && res.response.length !== 0)
       {
         for(var al in res.response)
@@ -231,8 +216,7 @@ $(function()
       /**
        * добавить альбом
        */
-      VK.Api.call('audio.addAlbum', {title: albumName}, function(res)
-      {
+      VK.Api.call('audio.addAlbum', {title:albumName}, function(res) {
         if(!isVkError(res))
           if(res.response.album_id > 0)
             callback(callbackParam, res.response.album_id);
@@ -248,12 +232,10 @@ $(function()
    * @param trackId
    * @param track
    */
-  function moveTrackToAlbum(trackId, albumId, track)
-  {
-    track = track || {artist: '', title: ''};
+  function moveTrackToAlbum(trackId, albumId, track) {
+    track = track || {artist:'', title:''};
 
-    VK.Api.call('audio.moveToAlbum', {aids: trackId, album_id: albumId}, function(res)
-    {
+    VK.Api.call('audio.moveToAlbum', {aids:trackId, album_id:albumId}, function(res) {
       if(!isVkError(res))
       {
         showNotice("Moved to album: " + track.artist + " - " + track.title);
@@ -264,11 +246,10 @@ $(function()
 
 });
 
-function isVkError(res)
-{
+function isVkError(res) {
   if(typeof res.error !== 'undefined' && res.error.error_msg)
   {
-    showNotice('VK Error. Code: ' + res.error.error_code + '. Error message: ' + res.error.error_msg);
+    showNotice('VK Error. Code: ' + res.error.error_code + '. Error message: ' + res.error.error_msg, 'error');
     console.error(res);
     return true;
   }

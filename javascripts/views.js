@@ -1,17 +1,15 @@
 ;
-(function($, window, undefined)
-{
+(function($, window, undefined) {
 
   var pluginName = 'views',
-          document = window.document,
-          defaults = {
-            viewsPath:"/views/",
-            view:null,
-            data:{}
-          };
+      document = window.document,
+      defaults = {
+        viewsPath:"/views/",
+        view:null,
+        data:{}
+      };
 
-  function Plugin(element, options)
-  {
+  function Plugin(element, options) {
     this.element = element;
     this.options = $.extend({}, defaults, options);
 
@@ -22,8 +20,7 @@
     this.init();
   }
 
-  Plugin.prototype.init = function()
-  {
+  Plugin.prototype.init = function() {
     if(this.options.view && this.options.view.length && typeof Plugin.viewsHtml[this.options.view] === "undefined" || Plugin.viewsHtml[this.options.view].length === 0)
     {
       var self = this,
@@ -34,23 +31,20 @@
         url:url,
         dataType:"html",
         type:"GET"
-      }).done(function(data)
-              {
-                Plugin.viewsHtml[self.options.view] = data;
-              })
-        .fail(function(e)
-        {
-          //console.log(e.status + ": " + e.statusText);
-        });
+      }).done(function(data) {
+            Plugin.viewsHtml[self.options.view] = data;
+          })
+          .fail(function(e) {
+            //console.log(e.status + ": " + e.statusText);
+          });
     }
   };
 
-  Plugin.prototype.render = function(elem, where)
-  {
+  Plugin.prototype.render = function(elem, where) {
     var self = this;
     if(Plugin.viewsHtml[this.options.view].length === 0)
     {
-      this.viewGetter.done(function(){
+      this.viewGetter.done(function() {
         if(Plugin.viewsHtml[self.options.view].length === 0)
           return;
 
@@ -65,8 +59,7 @@
   };
 
 
-  $.views = function(options)
-  {
+  $.views = function(options) {
     if(typeof Plugin.viewsHtml === "undefined")
       Plugin.viewsHtml = {};
     return new Plugin(this, options);

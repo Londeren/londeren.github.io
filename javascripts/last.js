@@ -108,6 +108,8 @@ $(function()
 
         pagingView.render($("#paging"), 'html');
 
+        
+
       }
     },
       error:function(code, message)
