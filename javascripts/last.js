@@ -88,12 +88,20 @@ $(function()
         var trackList = [];
         for(var t in data.lovedtracks.track)
         {
+          if(!data.lovedtracks.track.hasOwnProperty(t))
+            continue;
+
           var track = data.lovedtracks.track[t];
+
 
           trackList.push({
             "artist": track.artist.name,
             "title": track.name,
-            "label": md5(track.artist.name + track.name)
+            "label": md5(track.artist.name + track.name),
+            "loaded": isTrackInTrackList({
+              "artist": track.artist.name,
+              "title": track.name
+            }, window.lastVk.vkTrackList)
           });
         }
         var tracklistView = $.views({view: 'tracklist', data: {tracks:trackList, hasTracks: !!trackList.length}});
@@ -106,9 +114,9 @@ $(function()
           total:data.lovedtracks["@attr"].total
         }).getPagingParams()}});
 
-        pagingView.render($("#paging"), 'html');
+        pagingView.render($(".x-paging"), 'html');
 
-        
+        $_lastvk.trigger('lastvk.lastfm.lovedListLoaded', [trackList]);
 
       }
     },

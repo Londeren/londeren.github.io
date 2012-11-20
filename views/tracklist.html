@@ -11,7 +11,7 @@
         {{#tracks}}
             <tr>
                 <td><label for="{{label}}">{{artist}} &mdash; {{title}}</label></td>
-                <td><label for="{{label}}"><input type="checkbox" checked="checked" data-artist="{{artist}}" data-title="{{title}}" class="x-tracklist__to-vk__track" id="{{label}}"></label></td>
+                <td><label for="{{label}}"><input type="checkbox"{{^loaded}} checked="checked"{{/loaded}} data-artist="{{artist}}" data-title="{{title}}" class="x-tracklist__to-vk__track" id="{{label}}"></label></td>
             </tr>
         {{/tracks}}
     </table>

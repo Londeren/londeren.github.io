@@ -10,7 +10,8 @@ $(function() {
   var $_lastvk = $("#lastvk"),
       VK = window.VK,
       $_vkAuthButton = $("#vk-auth-button"),
-      userId = 0;
+      userId = 0,
+      vkTrackList = []; // список треков в vk
 
   var ALBUM_NAME_LOVED = 'Loved tracks',
       ALBUM_NAME_POPULAR = 'Most popular tracks';
@@ -49,38 +50,21 @@ $(function() {
 
     if($_selectedTracks.length)
     {
-      var vkTracks = [];
 
-      VK.Api.call('audio.get', {uid:userId}, function(res) {
-        if(isVkError(res) || res.response.length === 0)
+      $_selectedTracks.each(function() {
+        var track = {
+          "artist":$(this).data('artist'),
+          "title":$(this).data('title')
+        };
+
+        if(isTrackInTrackList(track, vkTrackList))
           return;
 
-        for(var t in res.response)
-        {
-          var trk = res.response[t];
-          vkTracks.push({
-            "artist":trk.artist,
-            "title":trk.title
-          });
-        }
-
-        $_selectedTracks.each(function() {
-          var track = {
-            "artist":$(this).data('artist'),
-            "title":$(this).data('title')
-          };
-
-          if(isTrackInTrackList(track, vkTracks))
-            return;
-
-          tracksToImport.push(track);
-        });
-
-        if(tracksToImport.length)
-          getAlbumIdByName(ALBUM_NAME_LOVED, importTracks, tracksToImport);
+        tracksToImport.push(track);
       });
 
-
+      if(tracksToImport.length)
+        getAlbumIdByName(ALBUM_NAME_LOVED, importTracks, tracksToImport);
     }
   });
 
@@ -98,7 +82,7 @@ $(function() {
           var first_name = res.response.pop()['first_name'];
           var howdy = "VK.com: hi, " + first_name;
           $_vkAuthButton.html(howdy).removeClass("alert").addClass("success disabled").off();
-          $_lastvk.trigger("lastvk.authorized", ['VK']);
+          getVkTracks();
         }
 
       });
@@ -107,25 +91,6 @@ $(function() {
     {
       $_vkAuthButton.html("VK.com try again").removeClass("success disabled").addClass("alert");
     }
-  }
-
-  /**
-   * присутствует ли трек в списке треков
-   * @param track
-   * @param trackList
-   */
-  function isTrackInTrackList(track, trackList) {
-    if(trackList.length === 0)
-      return false;
-
-    for(var t in trackList)
-    {
-      var trk = trackList[t];
-
-      if(trk.artist == track.artist && trk.title == track.title)
-        return true;
-    }
-    return false;
   }
 
   /**
@@ -171,7 +136,7 @@ $(function() {
                   VK.Api.call('audio.add', {aid:trk.aid, oid:trk.owner_id}, function(res) {
                     if(!isVkError(res))
                     {
-                      showNotice("Added: " + track.artist + " - " + track.title);
+                      showNotice("Added: " + track.artist + " - " + track.title, 'success');
                       moveTrackToAlbum(res.response, albumId, track);
                     }
                   });
@@ -238,11 +203,41 @@ $(function() {
     VK.Api.call('audio.moveToAlbum', {aids:trackId, album_id:albumId}, function(res) {
       if(!isVkError(res))
       {
-        showNotice("Moved to album: " + track.artist + " - " + track.title);
+        showNotice("Moved to album: " + track.artist + " - " + track.title, 'success');
         return res.response;
       }
     });
   }
+
+  /**
+   * получить список треков VK
+   */
+  function getVkTracks() {
+    VK.Api.call('audio.get', {uid:userId}, function(res) {
+      if(isVkError(res) || res.response.length === 0)
+        return;
+
+      for(var t in res.response)
+      {
+        if(!res.response.hasOwnProperty(t))
+          continue;
+
+        var trk = res.response[t];
+        vkTrackList.push({
+          "artist": trk.artist,
+          "title": trk.title,
+          "label": md5(trk.artist + trk.title)
+        });
+      }
+
+      window.lastVk.vkTrackList = vkTrackList;
+
+      $_lastvk.trigger("lastvk.authorized", ['VK']);
+
+    });
+  }
+
+
 
 });
 

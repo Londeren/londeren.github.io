@@ -1,3 +1,5 @@
+window.lastVk = {};
+
 $(function(){
   'use strict';
 
@@ -56,3 +58,24 @@ function showNotice(text, type)
   });
 }
 
+/**
+ * присутствует ли трек в списке треков
+ * @param track
+ * @param trackList
+ */
+function isTrackInTrackList(track, trackList) {
+  if(trackList.length === 0)
+    return false;
+
+  for(var t in trackList)
+  {
+    if(!trackList.hasOwnProperty(t))
+      continue;
+
+    var trk = trackList[t];
+
+    if(trk.artist == track.artist && trk.title == track.title)
+      return true;
+  }
+  return false;
+}
