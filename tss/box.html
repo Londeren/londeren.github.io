@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Блок</title>
+    <!--
+    Сделайте блок который будет высотой  250px,  шириной 635px, с заливкой rgb(249, 107, 255),  Рамкой 3px сплошной цвет rgb(44, 219, 205) и выровнять в нутри блока по X и Y слово Hello! которое должно быть написано цветом: размер шрифта 20px цвет Красный. Все должно корректно отображаться в IE6+.
+Отцентрировать блок по центру экрана. Примечания: Блок должен иметь возможность динамически изменятся по X и Y оставаясь по центру. нельзя использовать JS/JQ.
+    -->
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        .b-wrap {
+            width: 100%;
+            padding: 0;
+            display: table;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+        }
+
+        .b-container {
+            padding: 0;
+            vertical-align: middle;
+            display: table-cell;
+            margin: 0;
+        }
+
+        .b-box {
+            background-color: rgb(249, 107, 255);
+            border: 3px solid rgb(44, 219, 205);
+            height: 250px;
+            width: 635px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 10px;
+            line-height:250px;
+        }
+        .b-word {
+            font-size: 20px;
+            color: red;
+        }
+    </style>
+    <!--[if lte IE 7]>
+    <style type="text/css">
+        .b-wrap {
+            top: 0;
+            display: inline-block;
+        }
+
+        .b-container {
+            display: inline-block;
+            top: 50%;
+            position: relative;
+        }
+
+        .b-box {
+            display: inline-block;
+            top: -50%;
+            position: relative;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body>
+
+
+
+<div class="b-wrap">
+    <div class="b-container">
+        <div class="b-box">
+           <span class="b-word">Hello!</span>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Slider</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--
+    Сделать горизонтальный анимированный слайдер занимающий всю ширину основного контента*,
+    чтобы кол-во элементов зависело от ширины экрана (> 1000 = 5 слайдов, <= 1000 = 4 слайда).
+    Слайдер должен подгружать новую информацию ajax-ом по клику на кнопку “Добавить”. Изначальное кол-во картинок 8.
+    При клике на добавить должно добавится еще 4 картинки. Картинки произвольные. Высота картинок произвольна.
+    *основной контент должен занимать 80% от ширины экрана и расположен по центру.
+    -->
+
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+        .b-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            margin: 0 auto;
+            overflow: auto;
+        }
+
+        .b-container-center {
+            width: 80%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            overflow: auto;
+        }
+
+        .b-slider__body {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .b-slider__items {
+            transform: translateX(0);
+            transition: all 1s ease 0s;
+        }
+
+        .b-slider__item {
+            display: inline-block;
+
+        }
+
+        .b-slider__img {
+            height: 100%;
+            max-width: 100%;
+        }
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="b-container">
+    <div class="b-container-center">
+
+        <section class="container-fluid" id="x-slider" ng-controller="SliderController as SliderCtrl">
+            <div class="row">
+                <div class="col-md-12"><a class="btn btn-primary" ng-click="SliderCtrl.getNextItems()" role="button">Добавить</a></div>
+            </div>
+
+            <div slider items="SliderCtrl.items"></div>
+
+            <script id="slider.tpl" type="text/ng-template">
+                <div class="b-slider__body bg-info" id="x-slider__body">
+                    <a class="btn btn-lg" ng-click="vm.scrollToPrev()"><i class="glyphicon glyphicon-arrow-left"></i></a>
+                    <a class="btn btn-lg" ng-click="vm.scrollToNext()"><i class="glyphicon glyphicon-arrow-right"></i></a>
+
+                    <div class="b-slider__items" id="x-slider__items" ng-style="vm.sliderStyle()">
+                        <div ng-repeat="url in vm.items track by $index" class="b-slider__item" ng-style="vm.slideStyle()">
+                            <img ng-src="{{url}}" alt="" class="b-slider__img" /></div>
+                    </div>
+                </div>
+            </script>
+        </section>
+
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript" src="assets/angular.min.js"></script>
+<script type="text/javascript" src="assets/js/SliderService.js"></script>
+<script type="text/javascript" src="assets/js/SliderDirective.js"></script>
+<script type="text/javascript" src="assets/js/SliderController.js"></script>
+</body>
+</html>
