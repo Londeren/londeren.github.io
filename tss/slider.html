@@ -42,7 +42,6 @@
         }
 
         .b-slider__items {
-            transform: translateX(0);
             transition: all 1s ease 0s;
         }
 
@@ -76,12 +75,14 @@
 
             <script id="slider.tpl" type="text/ng-template">
                 <div class="b-slider__body bg-info" id="x-slider__body">
-                    <a class="btn btn-lg" ng-click="vm.scrollToPrev()"><i class="glyphicon glyphicon-arrow-left"></i></a>
-                    <a class="btn btn-lg" ng-click="vm.scrollToNext()"><i class="glyphicon glyphicon-arrow-right"></i></a>
+
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-left" ng-click="vm.scrollToPrev()"></a>
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-right" ng-click="vm.scrollToNext()"></a>
 
                     <div class="b-slider__items" id="x-slider__items" ng-style="vm.sliderStyle()">
                         <div ng-repeat="url in vm.items track by $index" class="b-slider__item" ng-style="vm.slideStyle()">
-                            <img ng-src="{{url}}" alt="" class="b-slider__img" /></div>
+                            <img ng-src="{{url}}" alt="" class="b-slider__img" />
+                        </div>
                     </div>
                 </div>
             </script>

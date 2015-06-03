@@ -1,4 +1,4 @@
-(function(){
+(function() {
   'use strict';
 
   angular.module('slider.directive', []).directive('slider', SliderDirective);
@@ -26,48 +26,106 @@
      * Controller
      * @constructor
      */
-    function SliderController(){
+    function SliderController() {
       var vm = this;
+
+      /**
+       * slides
+       * @type {Array}
+       */
+      vm.items = [];
+      /**
+       * slider body styles
+       * @type {{}}
+       */
+      vm.sliderStyles = {};
+      /**
+       * slider frame number
+       * @type {number}
+       */
+      vm.frame = 0;
+
 
       vm.scrollToPrev = scrollToPrev;
       vm.scrollToNext = scrollToNext;
       vm.sliderStyle = sliderStyle;
       vm.slideStyle = slideStyle;
+      vm.getFramesTotal = getFramesTotal;
+      vm.recalculateScroll = recalculateScroll;
 
 
       /**
        * set width for slide
-       * @return {{width: string}}
+       * @return {{}}
        */
-      function sliderStyle(){
-        if(vm.items)
-          return {
-            width: vm.sliderWidth * vm.items.length + 2000 + 'px'
-          };
+      function sliderStyle() {
+        vm.sliderStyles.width = vm.slideWidth * vm.items.length + 2000 + 'px';
+
+        return vm.sliderStyles;
       }
 
       /**
        * set width for slide
        * @return {{width: string}}
        */
-      function slideStyle(){
+      function slideStyle() {
         return {
-          width: vm.sliderWidth + 'px'
+          width: vm.slideWidth + 'px'
         };
       }
 
-      function scrollToPrev() {
-        console.log('prev');
+      /**
+       *
+       */
+      function getFramesTotal() {
+
+        return Math.ceil(vm.items.length / vm.itemsPerFrame)
       }
 
-      function scrollToNext() {
-        console.log('next');
+      /**
+       * scroll frame backward
+       */
+      function scrollToPrev() {
+        if(!vm.frame)
+          return;
 
+        var nextFrame = vm.frame - 1;
+
+        vm.sliderStyles.transform = 'translateX(-' + nextFrame * vm.slideWidth * vm.itemsPerFrame + 'px)';
+
+        vm.frame = nextFrame;
+      }
+
+      /**
+       * scroll frame forward
+       */
+      function scrollToNext() {
+        var nextFrame = vm.frame + 1;
+
+        if(vm.getFramesTotal() == nextFrame)
+          return;
+
+        vm.sliderStyles.transform = 'translateX(-' + nextFrame * vm.slideWidth * vm.itemsPerFrame + 'px)';
+
+        vm.frame = nextFrame;
+      }
+
+      /**
+       * recalculate frames
+       */
+      function recalculateScroll() {
+        var framesTotal = vm.getFramesTotal();
+
+        if(vm.frame > framesTotal)
+          vm.frame = framesTotal - 1;
+
+        vm.sliderStyles.transform = 'translateX(-' + vm.frame * vm.slideWidth * vm.itemsPerFrame + 'px)';
       }
     }
 
+
     /**
-     * linking func
+     * linking
      * @param scope
      * @param element
      * @param attrs
@@ -75,9 +133,7 @@
      * @constructor
      */
     function SliderLink(scope, element, attrs, ctrl) {
-
       calculateSizes(scope, ctrl);
-
     }
 
     /**
@@ -89,17 +145,20 @@
       var wdn = angular.element($window),
           resize;
 
-      scope.$watch(function () {
+      scope.$watch(function() {
         return {
-          windowHeight: window.innerHeight,
-          windowWidth: window.innerWidth,
-          sliderWidth: document.getElementById("x-slider__body").clientWidth
+          windowWidth: window.innerWidth
         };
-      }, function (newValue) {
-        ctrl.sliderWidth = newValue.sliderWidth / getSlidesPerScreen(newValue);
+      }, function(newValue) {
+        var sliderWidth = document.getElementById("x-slider__body").clientWidth;
+
+        ctrl.itemsPerFrame = getSlidesPerScreen(newValue);
+        ctrl.slideWidth = sliderWidth / ctrl.itemsPerFrame;
+
+        ctrl.recalculateScroll();
       }, true);
 
-      wdn.bind('resize', function () {
+      wdn.bind('resize', function() {
         scope.$apply();
 
       });
