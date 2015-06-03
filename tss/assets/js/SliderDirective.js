@@ -31,9 +31,30 @@
 
       vm.scrollToPrev = scrollToPrev;
       vm.scrollToNext = scrollToNext;
+      vm.sliderStyle = sliderStyle;
+      vm.slideStyle = slideStyle;
 
 
+      /**
+       * set width for slide
+       * @return {{width: string}}
+       */
+      function sliderStyle(){
+        if(vm.items)
+          return {
+            width: vm.sliderWidth * vm.items.length + 2000 + 'px'
+          };
+      }
 
+      /**
+       * set width for slide
+       * @return {{width: string}}
+       */
+      function slideStyle(){
+        return {
+          width: vm.sliderWidth + 'px'
+        };
+      }
 
       function scrollToPrev() {
         console.log('prev');
@@ -57,12 +78,6 @@
 
       calculateSizes(scope, ctrl);
 
-
-      scope.$watch(attrs.items, function(value) {
-        angular.forEach(angular.element(document.querySelectorAll("#x-slider__items")), function(el){
-          console.log(el);
-        });
-      });
     }
 
     /**
@@ -71,7 +86,8 @@
      * @param ctrl
      */
     function calculateSizes(scope, ctrl) {
-      var wdn = angular.element($window);
+      var wdn = angular.element($window),
+          resize;
 
       scope.$watch(function () {
         return {
@@ -80,46 +96,25 @@
           sliderWidth: document.getElementById("x-slider__body").clientWidth
         };
       }, function (newValue) {
-        ctrl.sliderWidth = getCalculatedSlideWidth(newValue);
-
-
-        /**
-         * set width for slide
-         * @return {{width: string}}
-         */
-        ctrl.sliderStyle = function(){
-          return {
-            width: ctrl.sliderWidth * ctrl.items.length + 2000 + 'px'
-          };
-        };
-
-        /**
-         * set width for slide
-         * @return {{width: string}}
-         */
-        ctrl.slideStyle = function(){
-          return {
-            width: ctrl.sliderWidth + 'px'
-          };
-        };
-
+        ctrl.sliderWidth = newValue.sliderWidth / getSlidesPerScreen(newValue);
       }, true);
 
       wdn.bind('resize', function () {
         scope.$apply();
+
       });
     }
 
     /**
-     * size of single slide
+     * slides on screen
      * @param sizes
-     * @return object
+     * @return {number}
      */
-    function getCalculatedSlideWidth(sizes) {
+    function getSlidesPerScreen(sizes) {
       if(sizes.windowWidth > 1000)
-        return sizes.sliderWidth / 5;
+        return 5;
 
-      return sizes.sliderWidth / 4;
+      return 4;
     }
   }
 })();
