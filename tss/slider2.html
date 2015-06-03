@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Slider</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+        .b-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            margin: 0 auto;
+            overflow: auto;
+        }
+
+        .b-container-center {
+            width: 80%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            overflow: auto;
+        }
+
+        .b-slider__body {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .b-slider__items {
+            transition: all 1s ease 0s;
+            width: 20000px;
+        }
+
+        .b-slider__item {
+            display: inline-block;
+
+        }
+
+        .b-slider__img {
+            max-width: 100%;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="b-container">
+    <div class="b-container-center">
+
+        <section class="container-fluid" id="x-slider" ng-controller="SliderController as SliderCtrl">
+            <div>
+                <div class="b-slider__body bg-info" id="x-slider__body">
+
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-left" ng-click="SliderCtrl.scrollToPrev()"></a>
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-right" ng-click="SliderCtrl.scrollToNext()"></a>
+
+                    <div class="b-slider__items" id="x-slider__items" ng-style="SliderCtrl.sliderStyle()">
+                        <div ng-repeat="url in SliderCtrl.items track by $index" class="b-slider__item" ng-style="SliderCtrl.slideStyle()">
+                            <img ng-src="{{url}}" alt="" class="b-slider__img" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript" src="assets/angular.min.js"></script>
+<script type="text/javascript" src="assets/js/SliderService.js"></script>
+<script type="text/javascript" src="assets/js/SliderController2.js"></script>
+</body>
+</html>
