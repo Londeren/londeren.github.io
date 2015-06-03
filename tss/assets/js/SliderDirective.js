@@ -116,7 +116,7 @@
       function recalculateScroll() {
         var framesTotal = vm.getFramesTotal();
 
-        if(vm.frame > framesTotal)
+        if(vm.frame + 1 > framesTotal)
           vm.frame = framesTotal - 1;
 
         vm.sliderStyles.transform = 'translateX(-' + vm.frame * vm.slideWidth * vm.itemsPerFrame + 'px)';
@@ -152,7 +152,7 @@
       }, function(newValue) {
         var sliderWidth = document.getElementById("x-slider__body").clientWidth;
 
-        ctrl.itemsPerFrame = getSlidesPerScreen(newValue);
+        ctrl.itemsPerFrame = getItemsPerFrame(newValue);
         ctrl.slideWidth = sliderWidth / ctrl.itemsPerFrame;
 
         ctrl.recalculateScroll();
@@ -169,7 +169,7 @@
      * @param sizes
      * @return {number}
      */
-    function getSlidesPerScreen(sizes) {
+    function getItemsPerFrame(sizes) {
       if(sizes.windowWidth > 1000)
         return 5;
 
