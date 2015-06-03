@@ -11,6 +11,9 @@
             margin: 0;
             height: 100%;
         }
+        .container-fluid {
+            width: 500px;
+        }
         .b-container {
             position: relative;
             height: 100%;
@@ -41,7 +44,7 @@
 
         .b-slider__item {
             display: inline-block;
-
+            width: 500px;
         }
 
         .b-slider__img {
@@ -59,14 +62,18 @@
     <div class="b-container-center">
 
         <section class="container-fluid" id="x-slider" ng-controller="SliderController as SliderCtrl">
+            <div class="row">
+                <div class="col-md-12"><a class="btn btn-primary" ng-click="SliderCtrl.addItem()" role="button">Добавить</a></div>
+            </div>
+
             <div>
                 <div class="b-slider__body bg-info" id="x-slider__body">
 
-                    <a class="btn btn-lg glyphicon glyphicon-arrow-left" ng-click="SliderCtrl.scrollToPrev()"></a>
-                    <a class="btn btn-lg glyphicon glyphicon-arrow-right" ng-click="SliderCtrl.scrollToNext()"></a>
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-left" ng-click="SliderCtrl.scrollTo(SliderCtrl.item - 1)"></a>
+                    <a class="btn btn-lg glyphicon glyphicon-arrow-right" ng-click="SliderCtrl.scrollTo(SliderCtrl.item + 1)"></a>
 
-                    <div class="b-slider__items" id="x-slider__items" ng-style="SliderCtrl.sliderStyle()">
-                        <div ng-repeat="url in SliderCtrl.items track by $index" class="b-slider__item" ng-style="SliderCtrl.slideStyle()">
+                    <div class="b-slider__items" id="x-slider__items" ng-style="SliderCtrl.sliderStyle">
+                        <div ng-repeat="url in SliderCtrl.items track by $index" class="b-slider__item">
                             <img ng-src="{{url}}" alt="" class="b-slider__img" />
                         </div>
                     </div>
