@@ -116,6 +116,9 @@
       function recalculateScroll() {
         var framesTotal = vm.getFramesTotal();
 
+        if(!framesTotal)
+          return;
+
         if(vm.frame + 1 > framesTotal)
           vm.frame = framesTotal - 1;
 
